@@ -3,10 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>온종일 — 블로그 · 애드센스 · 부업 스터디</title>
+  <title>온종일 허브 — 블로그 · 애드센스 · 부업 스터디</title>
   <meta name="description" content="온종일 스터디 그룹 자동화 툴 허브" />
-  <meta property="og:title" content="온종일 허브" />
-  <meta property="og:description" content="블로그 · 애드센스 · 부업 자동화 툴 모음" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet" />
@@ -15,24 +13,11 @@
   <link rel="stylesheet" href="assets/css/components.css" />
   <link rel="stylesheet" href="assets/css/cinematic.css" />
   <link rel="stylesheet" href="assets/css/responsive.css" />
-
-  <!-- 테마 깜빡임 방지 (head에서 즉시 적용) -->
-  <script>
-    (function(){
-      var t = localStorage.getItem('onjongil_theme');
-      if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark-preload');
-      }
-    })();
-  </script>
-  <style>
-    html.dark-preload body { background: #12131a; }
-  </style>
 </head>
 <body>
 
-  <!-- 테마 버튼 (상단 우측 고정) -->
-  <button class="theme-btn" onclick="toggleTheme()" aria-label="테마 전환">
+  <!-- 테마 버튼 -->
+  <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" aria-label="테마 전환">
     <span class="icon-moon">🌙</span>
     <span class="icon-sun">☀️</span>
   </button>
@@ -45,14 +30,13 @@
     </div>
   </div>
 
-  <!-- 페이지 래퍼 -->
   <div class="page-wrapper">
 
     <!-- 사이드바 (PC) -->
     <aside class="sidebar">
       <div class="sidebar__logo">
         <div class="logo-icon">
-          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg viewBox="0 0 48 48" fill="none">
             <path d="M6 38 L15 28 L23 32 L33 18 L42 11"
               stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
             <circle cx="15" cy="28" r="3.5" fill="white"/>
@@ -64,7 +48,7 @@
         </div>
         <h1 class="logo-title">온종일 허브</h1>
         <p class="logo-sub">블로그 · 애드센스 · 부업</p>
-        <p class="logo-en">Onjongil Study Hub</p>
+        <p class="logo-en">ONJONGIL STUDY HUB</p>
       </div>
       <nav class="sidebar__tags">
         <span class="tag tag--naver">네이버</span>
@@ -77,7 +61,6 @@
       </div>
     </aside>
 
-    <!-- 메인 콘텐츠 -->
     <div class="main-content">
 
       <!-- 모바일 히어로 -->
@@ -95,7 +78,7 @@
           <div>
             <h1 class="mobile-title">온종일 허브</h1>
             <p class="mobile-sub">블로그 · 애드센스 · 부업 스터디</p>
-            <p class="mobile-en">Onjongil Study Hub</p>
+            <p class="mobile-en">ONJONGIL STUDY HUB</p>
           </div>
         </div>
         <div class="mobile-tags">
@@ -106,7 +89,8 @@
         </div>
       </header>
 
-      <!-- 시네마틱 섹션은 JS로 여기에 삽입됨 -->
+      <!-- 시네마틱 섹션 자리 -->
+      <div id="cinematicWrap"></div>
 
       <!-- 섹션 헤더 -->
       <div class="section-header">
@@ -123,7 +107,7 @@
   </div>
 
   <!-- FAB -->
-  <button class="fab" onclick="onFabClick()" aria-label="툴 추가 / 관리자">
+  <button class="fab" onclick="onFabClick()" aria-label="관리자">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round">
       <line x1="12" y1="5" x2="12" y2="19"/>
       <line x1="5" y1="12" x2="19" y2="12"/>
@@ -150,7 +134,7 @@
     </div>
   </div>
 
-  <!-- 툴 편집 모달 -->
+  <!-- 편집 모달 -->
   <div class="overlay hidden" id="editOverlay" onclick="closeOnBackdrop(event,'editOverlay')">
     <div class="modal modal--form">
       <div class="modal__handle"></div>
@@ -194,7 +178,6 @@
     </div>
   </div>
 
-  <!-- JS: 순서 중요 -->
   <script src="assets/js/theme.js"></script>
   <script src="assets/js/data.js"></script>
   <script src="assets/js/render.js"></script>
