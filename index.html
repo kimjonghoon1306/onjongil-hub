@@ -677,8 +677,113 @@ body::before {
 .c-stat__l { font-size: 11px; color: var(--text-4); letter-spacing: 0.5px; }
 
 /* ═══════════════════════════════════════════
-   SIDE HUSTLE SPECTRUM SECTION
+   LOCK SYSTEM
 ═══════════════════════════════════════════ */
+.lock-status {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  padding: 6px 14px; border-radius: 100px;
+  transition: all 0.3s var(--ease-out);
+  cursor: pointer; user-select: none; border: none;
+  background: none;
+}
+.lock-status--locked {
+  color: #f87171;
+  background: rgba(248,113,113,0.08);
+  border: 1px solid rgba(248,113,113,0.2);
+}
+.lock-status--unlocked {
+  color: var(--accent);
+  background: var(--accent-glow2);
+  border: 1px solid var(--b2);
+}
+.lock-status__dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  animation: blink 2s infinite;
+}
+.lock-status--locked  .lock-status__dot { background: #f87171; box-shadow: 0 0 6px #f87171; }
+.lock-status--unlocked .lock-status__dot { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+
+/* Featured header row */
+.featured-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+/* Lock overlay on each card */
+.f-card { cursor: pointer; }
+.f-card__lock {
+  position: absolute; inset: 0; border-radius: 22px; z-index: 10;
+  background: rgba(0,0,0,0.55); backdrop-filter: blur(3px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; transition: opacity 0.3s;
+}
+.f-card__lock-icon {
+  width: 44px; height: 44px; border-radius: 14px;
+  background: rgba(248,113,113,0.12); border: 1px solid rgba(248,113,113,0.25);
+  display: flex; align-items: center; justify-content: center; font-size: 20px;
+}
+.f-card__lock-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  color: rgba(255,255,255,0.6); text-transform: uppercase;
+}
+.f-card.unlocked .f-card__lock { opacity: 0; pointer-events: none; }
+
+/* idle countdown badge */
+.idle-badge {
+  position: fixed; bottom: 100px; right: 32px; z-index: 300;
+  background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
+  border: 1px solid rgba(248,113,113,0.3); border-radius: 12px;
+  padding: 8px 14px; display: flex; align-items: center; gap: 7px;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: #f87171; transition: opacity 0.4s;
+  opacity: 0; pointer-events: none;
+}
+.idle-badge.show { opacity: 1; }
+.idle-badge__dot { width: 6px; height: 6px; border-radius: 50%; background: #f87171; animation: blink 1s infinite; }
+
+body.light .f-card__lock { background: rgba(255,255,255,0.6); }
+body.light .idle-badge { background: rgba(255,255,255,0.9); border-color: rgba(255,77,141,0.3); color: #ff4d8d; }
+body.light .idle-badge__dot { background: #ff4d8d; }
+body.light .lock-status--locked { color: #e03578; background: rgba(255,77,141,0.08); border-color: rgba(255,77,141,0.2); }
+body.light .lock-status--locked .lock-status__dot { background: #ff4d8d; box-shadow: 0 0 6px #ff4d8d; }
+
+/* Lock modal */
+#lockOverlay .modal__icon { font-size: 44px; }
+.lock-pin-row {
+  display: flex; gap: 10px; justify-content: center; margin-bottom: 8px;
+}
+.lock-pin-dot {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid var(--b3);
+  transition: background 0.15s, border-color 0.15s;
+}
+.lock-pin-dot.filled { background: var(--accent); border-color: var(--accent); }
+body.light .lock-pin-dot.filled { background: #ff4d8d; border-color: #ff4d8d; }
+
+.numpad {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px;
+}
+.np-btn {
+  height: 56px; border-radius: 14px; border: 1px solid var(--b1);
+  background: var(--g-700); color: var(--text-1);
+  font-size: 20px; font-weight: 700; cursor: pointer;
+  transition: background 0.15s, transform 0.1s, border-color 0.15s;
+  font-family: 'JetBrains Mono', monospace;
+}
+.np-btn:hover  { background: var(--g-500); border-color: var(--b2); }
+.np-btn:active { transform: scale(0.93); }
+.np-btn--del {
+  font-size: 16px; color: var(--text-4);
+  background: rgba(248,113,113,0.06); border-color: rgba(248,113,113,0.15);
+}
+.np-btn--del:hover { background: rgba(248,113,113,0.12); }
+.np-btn--0 { grid-column: 1 / 3; }
+body.light .np-btn { background: #f9f0f4; border-color: rgba(255,77,141,0.12); color: #111; }
+body.light .np-btn:hover { background: #f3e0ea; border-color: rgba(255,77,141,0.25); }
+body.light .np-btn--del { background: rgba(255,77,141,0.06); border-color: rgba(255,77,141,0.12); }
 .hustle-section { margin-top: 80px; }
 .hustle-section .sec-label { margin-bottom: 20px; }
 
@@ -1353,7 +1458,13 @@ body.light .ticker-item { color: #9a6080; }
     </header>
 
     <!-- ── FEATURED TOP 3 LINKS ───────────────── -->
-    <div class="sec-label reveal">주요 툴 바로가기</div>
+    <div class="featured-header">
+      <div class="sec-label reveal">주요 툴 바로가기</div>
+      <button class="lock-status lock-status--locked" id="lockStatusBtn" onclick="onLockStatusClick()">
+        <span class="lock-status__dot"></span>
+        <span id="lockStatusTxt">LOCKED</span>
+      </button>
+    </div>
     <div class="featured-grid reveal d1" id="featuredGrid"></div>
 
     <!-- ── CINEMATIC SECTION ─────────────────── -->
@@ -1599,6 +1710,41 @@ body.light .ticker-item { color: #9a6080; }
   </svg>
 </button>
 
+<!-- IDLE BADGE -->
+<div class="idle-badge" id="idleBadge">
+  <div class="idle-badge__dot"></div>
+  <span id="idleCountdown">자동 잠금까지 60초</span>
+</div>
+
+<!-- LOCK MODAL -->
+<div class="overlay hidden" id="lockOverlay" onclick="closeOnBackdrop(event,'lockOverlay')">
+  <div class="modal" style="max-width:360px;padding-bottom:52px">
+    <div class="modal__handle"></div>
+    <div class="modal__icon">🔐</div>
+    <h3 class="modal__title">비밀번호 입력</h3>
+    <div class="lock-pin-row">
+      <div class="lock-pin-dot" id="pd0"></div>
+      <div class="lock-pin-dot" id="pd1"></div>
+      <div class="lock-pin-dot" id="pd2"></div>
+      <div class="lock-pin-dot" id="pd3"></div>
+    </div>
+    <p class="form-error hidden" id="lockErr" style="margin-top:8px">비밀번호가 틀렸습니다</p>
+    <div class="numpad" id="numpad">
+      <button class="np-btn" onclick="npPress('1')">1</button>
+      <button class="np-btn" onclick="npPress('2')">2</button>
+      <button class="np-btn" onclick="npPress('3')">3</button>
+      <button class="np-btn" onclick="npPress('4')">4</button>
+      <button class="np-btn" onclick="npPress('5')">5</button>
+      <button class="np-btn" onclick="npPress('6')">6</button>
+      <button class="np-btn" onclick="npPress('7')">7</button>
+      <button class="np-btn" onclick="npPress('8')">8</button>
+      <button class="np-btn" onclick="npPress('9')">9</button>
+      <button class="np-btn np-btn--0" onclick="npPress('0')">0</button>
+      <button class="np-btn np-btn--del" onclick="npDel()">⌫</button>
+    </div>
+  </div>
+</div>
+
 <!-- PW MODAL -->
 <div class="overlay hidden" id="pwOverlay" onclick="closeOnBackdrop(event,'pwOverlay')">
   <div class="modal">
@@ -1793,28 +1939,179 @@ function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+/* ── LOCK SYSTEM ─────────────────────────────────── */
+const TOOL_PW    = '3210';
+const IDLE_SEC   = 180;   // 3분 미사용 시 자동 잠금
+const WARN_SEC   = 60;    // 이 시간부터 카운트다운 표시
+
+let toolsUnlocked = false;  // 새로고침 시 항상 잠금 (메모리만)
+let idleTimer     = null;
+let warnTimer     = null;
+let warnInterval  = null;
+let pinBuffer     = '';
+
+function updateLockUI() {
+  const btn = document.getElementById('lockStatusBtn');
+  const txt = document.getElementById('lockStatusTxt');
+  if (!btn) return;
+  if (toolsUnlocked) {
+    btn.className = 'lock-status lock-status--unlocked';
+    txt.textContent = 'UNLOCKED';
+  } else {
+    btn.className = 'lock-status lock-status--locked';
+    txt.textContent = 'LOCKED';
+  }
+  // 카드 잠금 오버레이 갱신
+  document.querySelectorAll('.f-card').forEach(el => {
+    el.classList.toggle('unlocked', toolsUnlocked);
+  });
+}
+
+function lockTools() {
+  toolsUnlocked = false;
+  clearIdleTimer();
+  updateLockUI();
+  // 아이들 배지 숨기기
+  const badge = document.getElementById('idleBadge');
+  if (badge) badge.classList.remove('show');
+}
+
+function unlockTools() {
+  toolsUnlocked = true;
+  updateLockUI();
+  resetIdleTimer();
+}
+
+function onLockStatusClick() {
+  if (toolsUnlocked) {
+    lockTools();
+  } else {
+    showById('lockOverlay');
+    pinBuffer = '';
+    updatePinDots();
+  }
+}
+
+/* NUMPAD */
+function npPress(digit) {
+  if (pinBuffer.length >= 4) return;
+  document.getElementById('lockErr').classList.add('hidden');
+  pinBuffer += digit;
+  updatePinDots();
+  if (pinBuffer.length === 4) {
+    setTimeout(checkPin, 120);
+  }
+}
+function npDel() {
+  pinBuffer = pinBuffer.slice(0, -1);
+  document.getElementById('lockErr').classList.add('hidden');
+  updatePinDots();
+}
+function updatePinDots() {
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('pd' + i).classList.toggle('filled', i < pinBuffer.length);
+  }
+}
+function checkPin() {
+  if (pinBuffer === TOOL_PW) {
+    closeById('lockOverlay');
+    unlockTools();
+    pinBuffer = '';
+    updatePinDots();
+  } else {
+    document.getElementById('lockErr').classList.remove('hidden');
+    // 흔들기 효과
+    const pd = document.getElementById('numpad');
+    pd.style.animation = 'none';
+    pd.offsetHeight; // reflow
+    pd.style.animation = 'shake 0.35s ease';
+    setTimeout(() => { pinBuffer = ''; updatePinDots(); }, 600);
+  }
+}
+
+/* IDLE TIMER */
+function resetIdleTimer() {
+  if (!toolsUnlocked) return;
+  clearIdleTimer();
+  warnTimer = setTimeout(() => {
+    // 카운트다운 시작
+    let left = WARN_SEC;
+    const badge = document.getElementById('idleBadge');
+    const cd    = document.getElementById('idleCountdown');
+    if (badge) badge.classList.add('show');
+    if (cd) cd.textContent = `자동 잠금까지 ${left}초`;
+    warnInterval = setInterval(() => {
+      left--;
+      if (cd) cd.textContent = `자동 잠금까지 ${left}초`;
+      if (left <= 0) {
+        clearInterval(warnInterval);
+        if (badge) badge.classList.remove('show');
+        lockTools();
+      }
+    }, 1000);
+  }, (IDLE_SEC - WARN_SEC) * 1000);
+}
+
+function clearIdleTimer() {
+  clearTimeout(warnTimer);
+  clearInterval(warnInterval);
+  warnTimer = null; warnInterval = null;
+  const badge = document.getElementById('idleBadge');
+  if (badge) badge.classList.remove('show');
+}
+
+// 사용자 활동 감지 → 타이머 리셋
+['click','mousemove','keydown','touchstart','scroll'].forEach(evt => {
+  document.addEventListener(evt, () => { if (toolsUnlocked) resetIdleTimer(); }, { passive: true });
+});
+
+/* shake 애니메이션 */
+const shakeStyle = document.createElement('style');
+shakeStyle.textContent = `@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%      { transform: translateX(-8px); }
+  40%      { transform: translateX(8px); }
+  60%      { transform: translateX(-5px); }
+  80%      { transform: translateX(5px); }
+}`;
+document.head.appendChild(shakeStyle);
+
 /* ── FEATURED GRID ──────────────────────────────── */
 function renderFeatured() {
   const top3 = cards.slice(0,3);
   const grid = document.getElementById('featuredGrid');
-  const cat4idx = (c) => {
-    const k = c.cat || 'etc';
-    return (CATS[k] || CATS.etc).label;
-  };
+  const cat4idx = (c) => (CATS[c.cat] || CATS.etc).label;
   grid.innerHTML = top3.map((c,i) => `
-    <a class="f-card" href="${esc(c.url)}" target="_blank" rel="noopener"
-       style="--card-accent:${F_ACCENT[i]};--card-tint:${F_TINT[i]};--card-glow:${F_GLOW[i]}">
+    <div class="f-card ${toolsUnlocked ? 'unlocked' : ''}"
+         style="--card-accent:${F_ACCENT[i]};--card-tint:${F_TINT[i]};--card-glow:${F_GLOW[i]}"
+         onclick="onFeaturedClick('${encodeURIComponent(c.url)}')">
       <div class="f-card__glow"></div>
+      <!-- Lock overlay -->
+      <div class="f-card__lock">
+        <div class="f-card__lock-icon">🔒</div>
+        <div class="f-card__lock-text">비밀번호 필요</div>
+      </div>
       <div class="f-card__seq">TOOL — 0${i+1}</div>
       <div class="f-card__icon">${esc(c.icon||'🔧')}</div>
       <div class="f-card__name">${esc(c.name)}</div>
       <div class="f-card__desc">${esc(c.desc||'')}</div>
       <div class="f-card__foot">
         <span class="f-card__badge">${cat4idx(c)}</span>
-        <span class="f-card__arrow">↗</span>
+        <span class="f-card__arrow">${toolsUnlocked ? '↗' : '🔒'}</span>
       </div>
-    </a>
+    </div>
   `).join('');
+}
+
+function onFeaturedClick(encodedUrl) {
+  if (toolsUnlocked) {
+    window.open(decodeURIComponent(encodedUrl), '_blank', 'noopener');
+  } else {
+    showById('lockOverlay');
+    pinBuffer = '';
+    updatePinDots();
+    document.getElementById('lockErr').classList.add('hidden');
+  }
 }
 
 /* ── TOOL GRID ──────────────────────────────────── */
