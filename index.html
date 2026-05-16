@@ -286,7 +286,7 @@ body::before {
 /* ═══════════════════════════════════════════
    LAYOUT
 ═══════════════════════════════════════════ */
-.page { display: flex; min-height: 100vh; position: relative; z-index: 1; }
+.page { display: flex; min-height: 100vh; position: relative; z-index: 1; overflow-x: hidden; }
 
 /* ═══════════════════════════════════════════
    SIDEBAR
@@ -711,23 +711,21 @@ body::before {
   margin-bottom: 18px;
 }
 
-/* Lock overlay on each card */
+/* Lock overlay on each card — subtle corner badge only */
 .f-card { cursor: pointer; }
 .f-card__lock {
-  position: absolute; inset: 0; border-radius: 22px; z-index: 10;
-  background: rgba(0,0,0,0.55); backdrop-filter: blur(3px);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 8px; transition: opacity 0.3s;
+  position: absolute; top: 14px; right: 14px; z-index: 10;
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(0,0,0,0.55); backdrop-filter: blur(6px);
+  border: 1px solid rgba(248,113,113,0.3);
+  border-radius: 10px; padding: 5px 10px;
+  transition: opacity 0.25s;
 }
-.f-card__lock-icon {
-  width: 44px; height: 44px; border-radius: 14px;
-  background: rgba(248,113,113,0.12); border: 1px solid rgba(248,113,113,0.25);
-  display: flex; align-items: center; justify-content: center; font-size: 20px;
-}
+.f-card__lock-icon { font-size: 13px; line-height: 1; }
 .f-card__lock-text {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
-  color: rgba(255,255,255,0.6); text-transform: uppercase;
+  font-size: 9px; font-weight: 700; letter-spacing: 1px;
+  color: rgba(255,255,255,0.7); text-transform: uppercase;
 }
 .f-card.unlocked .f-card__lock { opacity: 0; pointer-events: none; }
 
@@ -805,7 +803,7 @@ body.light .np-btn--del { background: rgba(255,77,141,0.06); border-color: rgba(
 
 .hustle-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 14px;
   margin-bottom: 0;
 }
@@ -993,9 +991,11 @@ body.light .r-step.done .r-step__dot { background: var(--r-col, #ff4d8d); color:
 
 /* Motivation ticker strip */
 .ticker-strip {
-  margin-top: 16px; overflow: hidden;
+  margin-top: 16px;
+  overflow: hidden;
   background: var(--g-750); border: 1px solid var(--b1); border-radius: 14px;
   padding: 14px 0; position: relative;
+  max-width: 100%;
 }
 body.light .ticker-strip { background: #fef6f9; border-color: rgba(255,77,141,0.1); }
 .ticker-strip::before, .ticker-strip::after {
@@ -2086,10 +2086,10 @@ function renderFeatured() {
          style="--card-accent:${F_ACCENT[i]};--card-tint:${F_TINT[i]};--card-glow:${F_GLOW[i]}"
          onclick="onFeaturedClick('${encodeURIComponent(c.url)}')">
       <div class="f-card__glow"></div>
-      <!-- Lock overlay -->
+      <!-- Lock badge (corner) -->
       <div class="f-card__lock">
         <div class="f-card__lock-icon">🔒</div>
-        <div class="f-card__lock-text">비밀번호 필요</div>
+        <div class="f-card__lock-text">잠금</div>
       </div>
       <div class="f-card__seq">TOOL — 0${i+1}</div>
       <div class="f-card__icon">${esc(c.icon||'🔧')}</div>
