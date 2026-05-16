@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>온종일 — 블로그 · 애드센스 · 부업 스터디</title>
+  <meta name="description" content="온종일 스터디 그룹 자동화 툴 허브" />
+  <meta property="og:title" content="온종일 허브" />
+  <meta property="og:description" content="블로그 · 애드센스 · 부업 자동화 툴 모음" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/css/reset.css" />
+  <link rel="stylesheet" href="assets/css/layout.css" />
+  <link rel="stylesheet" href="assets/css/components.css" />
+  <link rel="stylesheet" href="assets/css/responsive.css" />
+</head>
+<body>
+
+  <!-- 관리자 바 -->
+  <div id="adminBar" class="admin-bar hidden">
+    <div class="admin-bar__inner">
+      <span class="admin-bar__label">⚙️ 관리자 모드</span>
+      <button class="admin-bar__exit" onclick="exitAdmin()">나가기</button>
+    </div>
+  </div>
+
+  <!-- 레이아웃 래퍼 -->
+  <div class="page-wrapper">
+
+    <!-- 사이드바 (PC) -->
+    <aside class="sidebar">
+      <div class="sidebar__logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 38 L15 28 L23 32 L33 18 L42 11" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="15" cy="28" r="3.5" fill="white"/>
+            <circle cx="23" cy="32" r="3.5" fill="white"/>
+            <circle cx="33" cy="18" r="3.5" fill="white"/>
+            <text x="7" y="16" fill="rgba(255,255,255,0.5)" font-size="11" font-family="sans-serif">+</text>
+            <text x="35" y="10" fill="rgba(255,255,255,0.5)" font-size="11" font-family="sans-serif">+</text>
+          </svg>
+        </div>
+        <h1 class="logo-title">온종일</h1>
+        <p class="logo-sub">블로그 · 애드센스 · 부업</p>
+      </div>
+      <nav class="sidebar__tags">
+        <span class="tag tag--naver">네이버</span>
+        <span class="tag tag--adpost">애드포스트</span>
+        <span class="tag tag--adsense">애드센스</span>
+        <span class="tag tag--side">부업</span>
+      </nav>
+      <div class="sidebar__desc">
+        <p>자동화 툴을 한 곳에서<br>빠르게 접근하세요</p>
+      </div>
+    </aside>
+
+    <!-- 메인 콘텐츠 -->
+    <div class="main-content">
+
+      <!-- 모바일 히어로 -->
+      <header class="mobile-hero">
+        <div class="mobile-hero__inner">
+          <div class="mobile-logo-icon">
+            <svg viewBox="0 0 40 40" fill="none">
+              <path d="M5 32 L12 24 L19 27 L27 16 L35 10" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="12" cy="24" r="3" fill="white"/>
+              <circle cx="19" cy="27" r="3" fill="white"/>
+              <circle cx="27" cy="16" r="3" fill="white"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="mobile-title">온종일</h1>
+            <p class="mobile-sub">블로그 · 애드센스 · 부업 스터디</p>
+          </div>
+        </div>
+        <div class="mobile-tags">
+          <span class="tag tag--naver">네이버</span>
+          <span class="tag tag--adpost">애드포스트</span>
+          <span class="tag tag--adsense">애드센스</span>
+          <span class="tag tag--side">부업</span>
+        </div>
+      </header>
+
+      <!-- 섹션 헤더 -->
+      <div class="section-header">
+        <div class="section-header__left">
+          <h2 class="section-title">자동화 툴 모음</h2>
+          <span class="tool-count" id="toolCount"></span>
+        </div>
+      </div>
+
+      <!-- 툴 그리드 -->
+      <div class="tool-grid" id="toolGrid"></div>
+
+    </div>
+  </div>
+
+  <!-- FAB -->
+  <button class="fab" onclick="onFabClick()" aria-label="툴 추가 / 관리자">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round">
+      <line x1="12" y1="5" x2="12" y2="19"/>
+      <line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+  </button>
+
+  <!-- 비밀번호 모달 -->
+  <div class="overlay hidden" id="pwOverlay" onclick="closeOnBackdrop(event, 'pwOverlay')">
+    <div class="modal">
+      <div class="modal__handle"></div>
+      <div class="modal__icon">🔐</div>
+      <h3 class="modal__title">관리자 로그인</h3>
+      <div class="form-field">
+        <label class="form-label">비밀번호</label>
+        <input class="form-input" type="password" id="pwInput"
+          placeholder="비밀번호를 입력하세요"
+          onkeydown="if(event.key==='Enter') checkPw()" />
+      </div>
+      <p class="form-error hidden" id="pwErr">비밀번호가 틀렸습니다</p>
+      <div class="modal__actions">
+        <button class="btn btn--cancel" onclick="closeById('pwOverlay')">취소</button>
+        <button class="btn btn--primary" onclick="checkPw()">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 툴 편집 모달 -->
+  <div class="overlay hidden" id="editOverlay" onclick="closeOnBackdrop(event, 'editOverlay')">
+    <div class="modal modal--form">
+      <div class="modal__handle"></div>
+      <h3 class="modal__title" id="editTitle">툴 추가</h3>
+      <div class="form-field">
+        <label class="form-label">툴 이름 <span class="required">*</span></label>
+        <input class="form-input" type="text" id="fName" placeholder="예: BlogAuto Pro" />
+      </div>
+      <div class="form-field">
+        <label class="form-label">URL <span class="required">*</span></label>
+        <input class="form-input" type="url" id="fUrl" placeholder="https://example.com" />
+      </div>
+      <div class="form-field">
+        <label class="form-label">설명</label>
+        <input class="form-input" type="text" id="fDesc" placeholder="한 줄 설명" />
+      </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-label">카테고리</label>
+          <select class="form-select" id="fCat">
+            <option value="naver">네이버</option>
+            <option value="adpost">애드포스트</option>
+            <option value="adsense">애드센스</option>
+            <option value="side">부업</option>
+            <option value="etc">기타</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label class="form-label">아이콘 (이모지)</label>
+          <input class="form-input" type="text" id="fIcon" placeholder="📝" maxlength="2" />
+        </div>
+      </div>
+      <div class="form-field">
+        <label class="form-label">카드 색상</label>
+        <div class="color-picker" id="colorPick"></div>
+      </div>
+      <div class="modal__actions">
+        <button class="btn btn--cancel" onclick="closeById('editOverlay')">취소</button>
+        <button class="btn btn--primary" onclick="saveCard()">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/render.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
