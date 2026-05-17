@@ -4,17 +4,6 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
 <title>온종일 허브</title>
-<meta property="og:type" content="website"/>
-<meta property="og:url" content="https://hub.xn--zk5biyyw.com/"/>
-<meta property="og:title" content="온종일 허브"/>
-<meta property="og:description" content="모든 것이 연결되는 공간 — 온종일 허브"/>
-<meta property="og:image" content="https://hub.xn--zk5biyyw.com/assets/images/og-image-v2.png"/>
-<meta property="og:image:width" content="1200"/>
-<meta property="og:image:height" content="630"/>
-<meta name="twitter:card" content="summary_large_image"/>
-<meta name="twitter:title" content="온종일 허브"/>
-<meta name="twitter:description" content="모든 것이 연결되는 공간 — 온종일 허브"/>
-<meta name="twitter:image" content="https://hub.xn--zk5biyyw.com/assets/images/og-image-v2.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Oswald:wght@600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet"/>
@@ -484,6 +473,12 @@ body.pk .thd h2{color:#111}
 .tc:hover{transform:translateY(-4px);border-color:var(--b2);box-shadow:0 12px 36px rgba(0,0,0,.38)}
 .tc-gl{position:absolute;top:-28px;right:-28px;width:90px;height:90px;
   border-radius:50%;opacity:.38;pointer-events:none}
+.tc-lk{position:absolute;top:11px;right:11px;z-index:5;
+  background:rgba(0,0,0,.48);backdrop-filter:blur(8px);
+  border:1px solid rgba(248,113,113,.3);border-radius:8px;
+  padding:4px 8px;font-size:11px;line-height:1}
+.tc-locked{opacity:.75;cursor:pointer}
+.tc-locked .tc-ar{color:#f87171!important}
 .tc-ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;
   justify-content:center;font-size:21px;margin-bottom:13px;position:relative;z-index:1}
 .tc-nm{font-size:13px;font-weight:800;color:var(--t1);margin-bottom:4px;
@@ -1151,13 +1146,19 @@ function RT(){
   g.innerHTML=cards.map((c,i)=>{
     const col=GC()[c.ci??0],cat=CATS[c.cat]||CATS.etc;
     const adm=isAdmin?`<div class="tc-acts"><button class="act ae" onclick="event.stopPropagation();EC(${i})">수정</button><button class="act ad" onclick="event.stopPropagation();DC(${i})">삭제</button></div>`:'';
-    const ck=isAdmin?'':` onclick="OT('${encodeURIComponent(c.url)}')"`;
-    return`<div class="tc" style="background:${col.bg};border-color:${col.bd}"${ck} role="button" tabindex="0">
+    // 잠금 상태: 관리자는 항상 접근, 일반은 unlocked 필요
+    let ck='';
+    if(isAdmin) ck='';
+    else if(unlocked) ck=` onclick="OT('${encodeURIComponent(c.url)}')"`;
+    else ck=` onclick="openLock()"`;
+    const lkBadge=(!isAdmin&&!unlocked)?`<div class="tc-lk">🔒</div>`:'';
+    return`<div class="tc ${(!isAdmin&&!unlocked)?'tc-locked':''}" style="background:${col.bg};border-color:${col.bd}"${ck} role="button" tabindex="0">
       <div class="tc-gl" style="background:${col.gw}"></div>
+      ${lkBadge}
       <div class="tc-ico" style="background:${col.ic}">${esc(c.icon||'🔧')}</div>
       <div class="tc-nm">${esc(c.name)}</div>
       <div class="tc-ds">${esc(c.desc||'')}</div>
-      <div class="tc-ft"><span class="tc-bdg ${cat.c}">${cat.l}</span><span class="tc-ar">›</span></div>${adm}
+      <div class="tc-ft"><span class="tc-bdg ${cat.c}">${cat.l}</span><span class="tc-ar">${(!isAdmin&&!unlocked)?'🔒':'›'}</span></div>${adm}
     </div>`;
   }).join('');
 }
