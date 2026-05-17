@@ -684,6 +684,59 @@ body.pk .np:hover{background:#ede0e8;border-color:rgba(255,77,141,.25)}
   .q-txt{font-size:15px}
 }
 @media(min-width:601px) and (max-width:960px){.cs{align-items:center}}
+
+/* ── VISITOR STATS ── */
+.sb-vis{
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);
+  border-radius:12px;padding:11px 14px;margin-bottom:14px;position:relative;z-index:1;
+}
+.sv-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0}
+.sv-lbl{font-size:10px;color:rgba(255,255,255,.62);font-weight:500;
+  display:flex;align-items:center;gap:5px}
+.sv-lbl::before{content:'';width:5px;height:5px;border-radius:50%;
+  background:rgba(255,255,255,.38);flex-shrink:0}
+.sv-row.sv-today .sv-lbl::before{
+  background:#4ade80;box-shadow:0 0 5px #4ade80;animation:pulse 2s infinite}
+.sv-num{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:#fff}
+.sv-divider{height:1px;background:rgba(255,255,255,.09);margin:5px 0}
+
+/* ── SOCIAL PROOF TOAST ── */
+.sp-toast{
+  position:fixed;bottom:80px;left:20px;z-index:800;
+  background:rgba(8,20,12,.95);backdrop-filter:blur(18px);
+  border:1px solid rgba(34,197,94,.3);border-radius:14px;
+  padding:12px 16px;min-width:228px;max-width:280px;
+  display:flex;align-items:center;gap:11px;
+  box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 20px rgba(34,197,94,.07);
+  transition:opacity .6s ease,transform .6s ease;
+}
+body.pk .sp-toast{
+  background:rgba(255,242,248,.96);
+  border-color:rgba(255,77,141,.3);
+  box-shadow:0 8px 32px rgba(0,0,0,.14);
+}
+.sp-toast.sp-out{opacity:0;transform:translateY(10px);pointer-events:none}
+.sp-ava{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:900;color:#000;font-family:'Noto Sans KR',sans-serif;
+}
+body.pk .sp-ava{background:linear-gradient(135deg,#ff80b0,#ff4d8d);color:#fff}
+.sp-body{flex:1;min-width:0}
+.sp-name{font-size:12px;font-weight:800;color:#f0fdf4;line-height:1.3;margin-bottom:1px}
+body.pk .sp-name{color:#160810}
+.sp-act{font-size:11px;color:#4d7a5e;line-height:1.3;display:flex;align-items:center;gap:4px}
+body.pk .sp-act{color:#9a6080}
+.sp-dot{width:5px;height:5px;border-radius:50%;background:#22c55e;
+  box-shadow:0 0 5px #22c55e;flex-shrink:0;animation:pulse 2s infinite}
+body.pk .sp-dot{background:#ff4d8d;box-shadow:0 0 5px #ff4d8d}
+.sp-time{font-family:'JetBrains Mono',monospace;font-size:9px;
+  color:rgba(255,255,255,.25);margin-top:2px}
+body.pk .sp-time{color:rgba(0,0,0,.28)}
+@media(max-width:600px){
+  .sp-toast{bottom:72px;left:12px;min-width:200px;max-width:250px;padding:10px 13px}
+}
 </style>
 </head>
 <body>
@@ -761,6 +814,18 @@ body.pk .np:hover{background:#ede0e8;border-color:rgba(255,77,141,.25)}
     <div class="sb-stats">
       <div class="ss"><div class="ss-n" id="sb-cnt">3</div><div class="ss-l">자동화 툴</div></div>
       <div class="ss"><div class="ss-n">24/7</div><div class="ss-l">상시 운영</div></div>
+    </div>
+    <!-- Visitor counter -->
+    <div class="sb-vis">
+      <div class="sv-row">
+        <span class="sv-lbl">누적 방문자</span>
+        <span class="sv-num" id="vis-total">575</span>
+      </div>
+      <div class="sv-divider"></div>
+      <div class="sv-row sv-today">
+        <span class="sv-lbl">오늘 방문자</span>
+        <span class="sv-num" id="vis-today">0</span>
+      </div>
     </div>
     <div class="sb-footer">
       <p>자동화 툴을 한 곳에서<br>빠르게 접근하세요 ✨<br><br><strong>관리자 로그인</strong>으로<br>툴 추가·수정 가능</p>
@@ -844,6 +909,16 @@ body.pk .np:hover{background:#ede0e8;border-color:rgba(255,77,141,.25)}
     </section>
 
   </main>
+</div>
+
+<!-- Social Proof Toast -->
+<div class="sp-toast sp-out" id="sp-toast">
+  <div class="sp-ava" id="sp-ava">김</div>
+  <div class="sp-body">
+    <div class="sp-name" id="sp-name">김민준님이</div>
+    <div class="sp-act"><div class="sp-dot"></div><span id="sp-act-txt">방문했습니다</span></div>
+    <div class="sp-time" id="sp-time">방금 전</div>
+  </div>
 </div>
 
 <!-- FAB -->
@@ -1359,8 +1434,95 @@ function T(){
   RT();RF();RCP(selC);
 }
 
+/* ════════════ VISITOR COUNTER ════════════ */
+function initVisitors(){
+  const BASE=575;
+  const today=new Date().toISOString().slice(0,10);
+  const TOTAL_KEY='oj_vtotal';
+  const DAY_KEY='oj_vday_'+today;
+  const SESS_KEY='oj_vsess';
+
+  let total=parseInt(localStorage.getItem(TOTAL_KEY)||BASE,10);
+  if(isNaN(total)||total<BASE)total=BASE;
+
+  let todayN=parseInt(localStorage.getItem(DAY_KEY)||0,10);
+  if(isNaN(todayN))todayN=0;
+
+  // Count once per session
+  if(!sessionStorage.getItem(SESS_KEY)){
+    sessionStorage.setItem(SESS_KEY,'1');
+    total++;
+    todayN++;
+    localStorage.setItem(TOTAL_KEY,total);
+    localStorage.setItem(DAY_KEY,todayN);
+  }
+
+  const et=document.getElementById('vis-total');
+  const ed=document.getElementById('vis-today');
+  if(et)et.textContent=total.toLocaleString('ko-KR');
+  if(ed)ed.textContent=todayN.toLocaleString('ko-KR');
+}
+
+/* ════════════ SOCIAL PROOF ════════════ */
+(function(){
+  const NAMES=['김민준','이서연','박지호','최수아','정민서','강하은','조현우','윤지민','임도윤','한소율',
+    '오준서','서지아','권태양','신유나','황민재','안하린','문준혁','배소현','노준원','류지원',
+    '김아영','이준호','박서희','최민규','정하늘','강지훈','조예린','윤성민','임수빈','한준혁',
+    '오지은','서현민','권나연','신태준','황소영','안민준','문지수','배현우','노예원','류민아',
+    '김지훈','이소율','박민준','최예린','정승현','강나연','조태양','윤아린','임현민','한지아',
+    '오서연','서민재','권지호','신수아','황민서','안하은','문현우','배지민','노도윤','류소율',
+    '김준서','이지아','박태양','최하린','정민재','강소현','조준원','윤지원','임아영','한준호',
+    '오서희','서민규','권하늘','신지훈','황예린','안성민','문수빈','배준혁','노지은','류현민',
+    '김나연','이태준','박소영','최민준','정지수','강현우','조예원','윤민아','임지훈','한소율',
+    '오아영','서준호','권서희','신민규','황하늘','안지훈','문예린','배성민','노수빈','류준혁'];
+
+  const ACTIONS=[
+    ['방문했습니다','👀'],['신청했습니다','✅'],['가입했습니다','🎉'],
+    ['수강 신청했습니다','📚'],['툴을 사용했습니다','🛠️'],
+    ['로드맵을 확인했습니다','🗺️'],['오늘 수익을 확인했습니다','💰'],
+    ['블로그 자동화를 시작했습니다','🚀'],['키워드 분석을 했습니다','🔍'],
+    ['애드센스 셋팅을 완료했습니다','📊']];
+
+  const TIMES=['방금 전','1분 전','2분 전','3분 전','5분 전','7분 전','10분 전'];
+
+  let pool=[...Array(100).keys()]; // 0~99 indices
+  // shuffle
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  let pi=0;
+
+  function showNext(){
+    const toast=document.getElementById('sp-toast');
+    if(!toast)return;
+    if(pi>=pool.length){
+      // re-shuffle
+      for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+      pi=0;
+    }
+    const ni=pool[pi++];
+    const name=NAMES[ni%NAMES.length];
+    const act=ACTIONS[Math.floor(Math.random()*ACTIONS.length)];
+    const t=TIMES[Math.floor(Math.random()*TIMES.length)];
+
+    document.getElementById('sp-ava').textContent=name[0];
+    document.getElementById('sp-name').textContent=name+'님이';
+    document.getElementById('sp-act-txt').textContent=act[1]+' '+act[0];
+    document.getElementById('sp-time').textContent=t;
+
+    // Fade in
+    toast.classList.remove('sp-out');
+    // After 20s fade out briefly then show next
+    setTimeout(function(){
+      toast.classList.add('sp-out');
+      setTimeout(showNext,800);
+    },20000);
+  }
+
+  // Start after 3s delay
+  setTimeout(showNext,3000);
+})();
+
 /* ════════════ INIT ════════════ */
-IT();load();RF();RT();RH();RQ();RTK();RCINE();
+IT();load();RF();RT();RH();RQ();RTK();RCINE();initVisitors();
 </script>
 </body>
 </html>
