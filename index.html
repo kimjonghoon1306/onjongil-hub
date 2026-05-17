@@ -702,6 +702,14 @@ body.pk .vis-chip-today{background:rgba(255,77,141,.14);border-color:rgba(255,77
 /* 모바일 방문자 태그 강조 */
 .mob-vis-chip{background:rgba(255,255,255,.22)!important;border-color:rgba(255,255,255,.38)!important}
 .mob-vis-today{animation:none}
+/* 사이드바 스크롤 (스크롤바 숨김) */
+.sb{overflow-y:auto;overflow-x:hidden}
+.sb::-webkit-scrollbar{display:none}
+.sb{-ms-overflow-style:none;scrollbar-width:none}
+/* 새 요소 여백 축소 */
+.sb-live{margin-bottom:7px}
+.sb-cdown{margin-bottom:7px}
+.sb-greet{margin-bottom:7px}
 
 /* ── SOCIAL PROOF TOAST ── */
 .sp-toast{
@@ -804,12 +812,12 @@ body.pk .cta-slide:hover{background:#ff80b0}
   from{opacity:0;transform:translateY(32px)}
   to  {opacity:1;transform:translateY(0)}
 }
-.sb-logo {animation:popIn  .7s  .05s cubic-bezier(.34,1.56,.64,1) both}
-.sb-nav  {animation:fadeUp .55s .2s  cubic-bezier(.22,1,.36,1)    both}
-.sb-stats{animation:fadeUp .55s .3s  cubic-bezier(.22,1,.36,1)    both}
-.mob     {animation:popIn  .65s .05s cubic-bezier(.34,1.56,.64,1) both}
-.fhd     {animation:fadeUp .6s  .15s cubic-bezier(.22,1,.36,1)    both}
-.fg      {animation:fadeUp .65s .25s cubic-bezier(.22,1,.36,1)    both}
+.sb-logo {animation:popIn  .9s  .08s cubic-bezier(.34,1.56,.64,1) both}
+.sb-nav  {animation:fadeUp .7s  .3s  cubic-bezier(.22,1,.36,1)    both}
+.sb-stats{animation:fadeUp .7s  .42s cubic-bezier(.22,1,.36,1)    both}
+.mob     {animation:popIn  .85s .08s cubic-bezier(.34,1.56,.64,1) both}
+.fhd     {animation:fadeUp .7s  .2s  cubic-bezier(.22,1,.36,1)    both}
+.fg      {animation:fadeUp .75s .35s cubic-bezier(.22,1,.36,1)    both}
 </style>
 </head>
 <body>
@@ -1634,12 +1642,15 @@ function initPgBar(){
 function initLive(){
   const el=document.getElementById('sb-live-num');
   if(!el)return;
-  let n=Math.floor(Math.random()*18)+14;
-  el.textContent=n+'명';
+  const today=new Date().toISOString().slice(0,10);
+  const todayN=parseInt(localStorage.getItem('oj_vday_'+today)||1,10);
+  el.textContent=todayN+'명';
+  // 오늘 방문자 수 기준으로 소폭 변동
+  let n=todayN;
   function fluctuate(){
-    const d=Math.random()<.6?1:-1;
-    n=Math.max(8,Math.min(55,n+d*(Math.random()<.25?2:1)));
-    el.textContent=Math.round(n)+'명';
+    const delta=Math.random()<.55?1:-1;
+    n=Math.max(1,n+delta);
+    el.textContent=n+'명';
     setTimeout(fluctuate,Math.floor(Math.random()*12000)+22000);
   }
   setTimeout(fluctuate,Math.floor(Math.random()*12000)+22000);
