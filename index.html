@@ -1265,13 +1265,13 @@ function doUnlock(){
   unlocked=true;
   const b=S('lbtn'),t=S('ltxt');
   if(b){b.className='lbtn grn';t.textContent='🔓 잠금해제'}
-  RF();startIdle();
+  RF();RT();startIdle();
 }
 function doLock(){
   unlocked=false;
   const b=S('lbtn'),t=S('ltxt');
   if(b){b.className='lbtn red';t.textContent='🔒 잠금'}
-  RF();clearIdle();
+  RF();RT();clearIdle();
 }
 function startIdle(){
   clearIdle();
