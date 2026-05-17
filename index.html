@@ -740,9 +740,64 @@ body.pk .sp-time{color:rgba(0,0,0,.28)}
 @media(max-width:960px){
   .sp-toast{bottom:72px;left:12px;width:auto;min-width:200px;max-width:250px;padding:10px 13px}
 }
+
+/* ── SCROLL PROGRESS BAR ── */
+.pg-bar{position:fixed;top:0;left:0;height:3px;width:0;z-index:9999;
+  background:linear-gradient(90deg,var(--a),var(--ah));
+  pointer-events:none;border-radius:0 2px 2px 0;transition:width .12s linear}
+body.pk .pg-bar{background:linear-gradient(90deg,#ff4d8d,#ff80b0)}
+
+/* ── SIDEBAR: 실시간 접속자 ── */
+.sb-live{display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);
+  border-radius:11px;padding:9px 12px;margin-bottom:10px;position:relative;z-index:1}
+.sb-live-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;
+  background:#4ade80;box-shadow:0 0 8px #4ade80;animation:pulse 1.5s infinite}
+body.pk .sb-live-dot{background:#ffb3cc;box-shadow:0 0 8px #ffb3cc}
+.sb-live-txt{font-size:11px;color:rgba(255,255,255,.82);font-weight:600;flex:1}
+.sb-live-num{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:#fff}
+
+/* ── SIDEBAR: 자정 카운트다운 ── */
+.sb-cdown{display:flex;align-items:center;justify-content:space-between;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  border-radius:11px;padding:9px 12px;margin-bottom:10px;position:relative;z-index:1}
+.sb-cdown-lbl{font-size:10px;color:rgba(255,255,255,.6);font-weight:500}
+.sb-cdown-time{font-family:'JetBrains Mono',monospace;font-size:13px;
+  font-weight:700;color:#fff;letter-spacing:1.5px}
+
+/* ── SIDEBAR: 인삿말 ── */
+.sb-greet{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);
+  border-radius:11px;padding:11px 13px;margin-bottom:10px;position:relative;z-index:1}
+.sb-greet-txt{font-size:11px;color:rgba(255,255,255,.9);line-height:1.8;font-weight:500}
+.sb-greet-em{color:#fff;font-weight:800}
+
+/* ── CTA SLIDE ── */
+.cta-slide{
+  position:fixed;right:-230px;top:50%;transform:translateY(-50%);z-index:700;
+  background:var(--a);color:#000;font-family:'Noto Sans KR',sans-serif;
+  border-radius:100px 0 0 100px;padding:13px 20px 13px 24px;
+  font-size:13px;font-weight:800;
+  box-shadow:-4px 4px 28px rgba(0,0,0,.35);
+  cursor:pointer;border:none;
+  display:flex;align-items:center;gap:8px;white-space:nowrap;
+  transition:right .55s var(--spring);
+}
+.cta-slide.cta-vis{right:0}
+.cta-slide:hover{background:var(--ah)}
+body.pk .cta-slide{background:#ff4d8d;color:#fff}
+body.pk .cta-slide:hover{background:#ff80b0}
+@media(max-width:960px){.cta-slide{display:none}}
+
+/* ── 신규 요소 등장 애니메이션 ── */
+@keyframes welin{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.sb-live{animation:welin .55s .35s var(--ease) both}
+.sb-cdown{animation:welin .55s .45s var(--ease) both}
+.sb-greet{animation:welin .55s .55s var(--ease) both}
 </style>
 </head>
 <body>
+
+<div class="pg-bar" id="pg-bar"></div>
 
 <div class="orbs"><div class="orb o1"></div><div class="orb o2"></div></div>
 
@@ -819,6 +874,21 @@ body.pk .sp-time{color:rgba(0,0,0,.28)}
     <div class="sb-stats">
       <div class="ss"><div class="ss-n" id="sb-cnt">3</div><div class="ss-l">자동화 툴</div></div>
       <div class="ss"><div class="ss-n">24/7</div><div class="ss-l">상시 운영</div></div>
+    </div>
+    <!-- 실시간 접속자 -->
+    <div class="sb-live">
+      <div class="sb-live-dot"></div>
+      <span class="sb-live-txt">지금 접속 중</span>
+      <span class="sb-live-num" id="sb-live-num">24명</span>
+    </div>
+    <!-- 자정 카운트다운 -->
+    <div class="sb-cdown">
+      <span class="sb-cdown-lbl">🕛 자정까지</span>
+      <span class="sb-cdown-time" id="sb-cdown-time">00:00:00</span>
+    </div>
+    <!-- 인삿말 -->
+    <div class="sb-greet">
+      <p class="sb-greet-txt" id="sb-greet-txt"></p>
     </div>
     <div class="sb-footer">
       <p>자동화 툴을 한 곳에서<br>빠르게 접근하세요 ✨<br><br><strong>관리자 로그인</strong>으로<br>툴 추가·수정 가능</p>
@@ -917,6 +987,11 @@ body.pk .sp-time{color:rgba(0,0,0,.28)}
     <div class="sp-time" id="sp-time">방금 전</div>
   </div>
 </div>
+
+<!-- CTA Slide -->
+<button class="cta-slide" id="cta-slide" onclick="document.getElementById('tg').scrollIntoView({behavior:'smooth'})">
+  🚀 <span>전체 툴 보러가기</span>
+</button>
 
 <!-- FAB -->
 <button class="fab" onclick="onFab()" aria-label="관리자 메뉴">
@@ -1525,8 +1600,86 @@ function initVisitors(){
   setTimeout(showNext,3000);
 })();
 
+/* ════════════ SCROLL PROGRESS BAR ════════════ */
+function initPgBar(){
+  const bar=document.getElementById('pg-bar');
+  if(!bar)return;
+  function upd(){
+    const h=document.documentElement;
+    const max=h.scrollHeight-h.clientHeight;
+    bar.style.width=(max<=0?100:Math.min(h.scrollTop/max*100,100))+'%';
+  }
+  window.addEventListener('scroll',upd,{passive:true});
+  upd();
+}
+
+/* ════════════ LIVE VISITOR COUNT ════════════ */
+function initLive(){
+  const el=document.getElementById('sb-live-num');
+  if(!el)return;
+  let n=Math.floor(Math.random()*18)+14;
+  el.textContent=n+'명';
+  function fluctuate(){
+    const d=Math.random()<.6?1:-1;
+    n=Math.max(8,Math.min(55,n+d*(Math.random()<.25?2:1)));
+    el.textContent=Math.round(n)+'명';
+    setTimeout(fluctuate,Math.floor(Math.random()*12000)+22000);
+  }
+  setTimeout(fluctuate,Math.floor(Math.random()*12000)+22000);
+}
+
+/* ════════════ COUNTDOWN TO MIDNIGHT ════════════ */
+function initCountdown(){
+  const el=document.getElementById('sb-cdown-time');
+  if(!el)return;
+  function tick(){
+    const now=new Date(),mid=new Date();
+    mid.setHours(24,0,0,0);
+    const d=mid-now;
+    el.textContent=
+      String(Math.floor(d/3600000)).padStart(2,'0')+':'+
+      String(Math.floor((d%3600000)/60000)).padStart(2,'0')+':'+
+      String(Math.floor((d%60000)/1000)).padStart(2,'0');
+  }
+  tick();setInterval(tick,1000);
+}
+
+/* ════════════ SIDEBAR GREETING ════════════ */
+function initGreet(){
+  const el=document.getElementById('sb-greet-txt');
+  if(!el)return;
+  const total=parseInt(localStorage.getItem('oj_vtotal')||0,10);
+  const isReturn=total>576;
+  const h=new Date().getHours();
+  const timeWord=h<6?'새벽에도 달리시네요 🌙':
+    h<12?'좋은 아침이에요 ☀️':
+    h<18?'안녕하세요 👋':
+    h<22?'좋은 저녁이에요 🌙':'늦은 밤에도 열심이시네요 🌙';
+  el.innerHTML=isReturn
+    ?`또 오셨군요! 😊<br><strong class="sb-greet-em">반가워요~</strong><br>오늘도 한 줄이라도 써봐요 ✍️`
+    :`${timeWord}<br><strong class="sb-greet-em">처음 오셨군요!</strong><br>환영해요 🎉`;
+}
+
+/* ════════════ CTA SLIDE ════════════ */
+function initCtaSlide(){
+  const btn=document.getElementById('cta-slide');
+  const target=document.querySelector('.hustle');
+  if(!btn||!target)return;
+  let shown=false;
+  const obs=new IntersectionObserver(function(entries){
+    if(entries[0].isIntersecting&&!shown){
+      shown=true;
+      setTimeout(()=>btn.classList.add('cta-vis'),400);
+    }
+  },{threshold:.2});
+  obs.observe(target);
+  window.addEventListener('scroll',function(){
+    if(window.scrollY<80){btn.classList.remove('cta-vis');shown=false;}
+  },{passive:true});
+}
+
 /* ════════════ INIT ════════════ */
-IT();load();RF();RT();RH();RQ();RTK();RCINE();initVisitors();
+IT();load();RF();RT();RH();RQ();RTK();RCINE();initVisitors();initPgBar();initLive();initCountdown();initGreet();initCtaSlide();
 </script>
 </body>
 </html>
